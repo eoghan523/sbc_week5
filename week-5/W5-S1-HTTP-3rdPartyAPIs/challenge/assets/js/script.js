@@ -11,8 +11,12 @@ document.getElementById("getWeather").addEventListener("click", function () {
       .then((response) => response.json())
       .then((data) => {
         if (data.length > 0) {
-          //TODO: get the latitude and longitude for the city
-          //TODO: Call getWeather API with latitude and longitude
+          const lat = data[0].lat;
+          const lon = data[0].lon;
+          const cityName = data[0].name;
+
+          // Call getWeather API with latitude and longitude
+          getWeather(lat, lon, cityName);
         } else {
           displayError("City not found");
         }
@@ -24,17 +28,18 @@ document.getElementById("getWeather").addEventListener("click", function () {
 });
 
 // Function to get daily weather based on latitude and longitude
-function getWeather(lat, lon) {
+function getWeather(lat, lon, cityName) {
   const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
   fetch(weatherUrl)
     .then((response) => response.json())
     .then((data) => {
-      //TODO: get the main, weather, and name from the data
-      // const name = ???
-      // const temperature = ???
-      // const description = ???
-      displayWeather(name, temperature, description);
+      // Extract the relevant weather data
+      const temperature = data.main.temp; // Temperature in Celsius
+      const description = data.weather[0].description; // Weather description
+
+      // Display weather information
+      displayWeather(cityName, temperature, description);
     })
     .catch((error) => displayError("Error fetching weather data."));
 }
@@ -43,7 +48,12 @@ function getWeather(lat, lon) {
 function displayWeather(city, temperature, description) {
   const weatherResult = document.getElementById("weatherResult");
 
-  //TODO: display the city, temperature, and description in the weatherResult element
+  // Display city, temperature, and weather description
+  weatherResult.innerHTML = `
+    <h2>Weather in ${city}</h2>
+    <p>Temperature: ${temperature}°C</p>
+    <p>Condition: ${description}</p>
+  `;
 }
 
 // Function to display error messages
